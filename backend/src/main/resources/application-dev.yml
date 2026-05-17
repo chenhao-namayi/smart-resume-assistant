@@ -1,0 +1,20 @@
+# 开发环境配置 - 使用H2内存数据库（无需安装MySQL）
+spring:
+  datasource:
+    url: jdbc:h2:mem:ai_resume_copilot;DB_CLOSE_DELAY=-1;MODE=MySQL
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.H2Dialect
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console

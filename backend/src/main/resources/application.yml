@@ -1,0 +1,48 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: ai-resume-copilot
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/ai_resume_copilot?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&createDatabaseIfNotExist=true
+    username: root
+    password: 005418
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      timeout: 3000
+
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Shanghai
+
+# Deepseek LLM Configuration
+llm:
+  api-key: ${LLM_API_KEY:sk-e459d6acdefc45f7938186ea0c7b5bc8}
+  base-url: ${LLM_BASE_URL:https://api.deepseek.com/anthropic}
+  model: ${LLM_MODEL:deepseek-chat}
+  timeout: 60000
+  max-retries: 2
+
+# JWT Configuration
+jwt:
+  secret: ${JWT_SECRET:YzJhNjg5ZmI4M2QwN2YwYjQ1ZjE3M2I4YzE5ZDA0YzU2Nzg5MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNA==}
+  expiration: 604800000  # 7 days in milliseconds
+
+# Rate limiting
+rate-limit:
+  max-requests-per-minute: 5
