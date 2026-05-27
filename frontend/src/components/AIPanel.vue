@@ -160,7 +160,7 @@ function scrollToBottom() {
 // Expose setSection for parent to call
 defineExpose({ setSection })
 
-watch(() => props.resumeData, () => {
+watch(() => props.resumeId, () => {
   // clear messages when resume changes
   messages.value = []
   currentSection.value = ''
@@ -169,7 +169,7 @@ watch(() => props.resumeData, () => {
 
 <style scoped>
 .ai-panel {
-  height: 100%;
+  height: calc(100vh - 90px);
   display: flex;
   flex-direction: column;
 }

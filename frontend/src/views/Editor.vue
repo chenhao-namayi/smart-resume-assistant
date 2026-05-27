@@ -1,31 +1,27 @@
 <template>
   <div class="editor-page">
-    <el-container style="height: 100vh;">
-      <el-header class="editor-header">
-        <div class="header-left">
-          <el-button text @click="$router.push('/dashboard')" :icon="ArrowLeft">返回</el-button>
-          <h3>{{ resume?.title || '加载中...' }}</h3>
-          <el-tag v-if="resume?.version" size="small">V{{ resume.version }}</el-tag>
-        </div>
-        <div class="header-actions">
-          <el-button @click="handleSave" :loading="saving" type="primary" :icon="Check">保存</el-button>
-          <el-button @click="handleCreateVersion" :icon="CopyDocument">创建新版本</el-button>
-          <el-button @click="handleExport" :icon="Download">导出PDF</el-button>
-        </div>
-      </el-header>
-      <el-main class="editor-main">
-        <el-row :gutter="16" style="height: 100%;">
-          <el-col :span="14" style="height: 100%;">
-            <el-card class="form-card" style="height: 100%; overflow-y: auto;">
-              <ResumeForm ref="resumeFormRef" :resume-data="resumeData" @update="handleFormUpdate" @ai-optimize="handleAIOptimize" />
-            </el-card>
-          </el-col>
-          <el-col :span="10" style="height: 100%;">
-            <AIPanel ref="aiPanelRef" :resume-id="resumeId" :resume-data="resumeData" @apply-optimization="handleApplyOptimization" />
-          </el-col>
-        </el-row>
-      </el-main>
-    </el-container>
+    <div class="editor-header">
+      <div class="header-left">
+        <el-button text @click="$router.push('/dashboard')" :icon="ArrowLeft">返回</el-button>
+        <h3>{{ resume?.title || '加载中...' }}</h3>
+        <el-tag v-if="resume?.version" size="small">V{{ resume.version }}</el-tag>
+      </div>
+      <div class="header-actions">
+        <el-button @click="handleSave" :loading="saving" type="primary" :icon="Check">保存</el-button>
+        <el-button @click="handleCreateVersion" :icon="CopyDocument">创建新版本</el-button>
+        <el-button @click="handleExport" :icon="Download">导出PDF</el-button>
+      </div>
+    </div>
+    <div class="editor-body">
+      <div class="form-column">
+        <el-card class="form-card">
+          <ResumeForm ref="resumeFormRef" :resume-data="resumeData" @update="handleFormUpdate" @ai-optimize="handleAIOptimize" />
+        </el-card>
+      </div>
+      <div class="ai-column">
+        <AIPanel ref="aiPanelRef" :resume-id="resumeId" :resume-data="resumeData" @apply-optimization="handleApplyOptimization" />
+      </div>
+    </div>
   </div>
 </template>
 
@@ -128,6 +124,7 @@ onMounted(loadResume)
 
 <style scoped>
 .editor-page {
+  min-height: 100vh;
   background: #f5f7fa;
 }
 .editor-header {
@@ -137,6 +134,7 @@ onMounted(loadResume)
   background: #fff;
   box-shadow: 0 1px 4px rgba(0,0,0,0.08);
   padding: 0 20px;
+  height: 60px;
 }
 .header-left {
   display: flex;
@@ -151,9 +149,21 @@ onMounted(loadResume)
   display: flex;
   gap: 8px;
 }
-.editor-main {
-  height: calc(100vh - 60px);
+.editor-body {
+  display: flex;
+  gap: 16px;
   padding: 12px;
+  align-items: flex-start;
+}
+.form-column {
+  flex: 14;
+  min-width: 0;
+}
+.ai-column {
+  flex: 10;
+  min-width: 0;
+  position: sticky;
+  top: 12px;
 }
 .form-card {
   border-radius: 8px;

@@ -11,3 +11,7 @@ export function optimizeFull(data) {
 export function matchWithJob(data) {
   return request.post('/ai/match', data)
 }
+
+export function getMatchHistory() {
+  return request.get('/ai/match-history')
+}

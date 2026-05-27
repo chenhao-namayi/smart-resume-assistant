@@ -182,19 +182,14 @@ public class AdminService {
         );
     }
 
-    // ===== Optimization Logs =====
 
     public Page<OptimizationLog> listOptimizationLogs(int page, int size) {
         return optimizationLogRepository.findAllByOrderByCreatedAtDesc(PageRequest.of(page, size));
     }
 
-    // ===== Interview Sessions =====
-
     public Page<InterviewSession> listInterviews(int page, int size) {
         return interviewSessionRepository.findAllByOrderByCreatedAtDesc(PageRequest.of(page, size));
     }
-
-    // ===== Job Analyses =====
 
     public Page<JobAnalysis> listJobAnalyses(int page, int size) {
         return jobAnalysisRepository.findAllByOrderByCreatedAtDesc(PageRequest.of(page, size));

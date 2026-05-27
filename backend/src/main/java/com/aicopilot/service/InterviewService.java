@@ -29,7 +29,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class InterviewService {
 
-    private static final int MAX_QUESTIONS = 6;
+    private static final int MAX_QUESTIONS = 10;
 
     private final InterviewSessionRepository sessionRepository;
     private final ResumeRepository resumeRepository;

@@ -1,5 +1,6 @@
 package com.aicopilot.service;
 
+import com.aicopilot.dto.MatchHistoryItem;
 import com.aicopilot.dto.MatchResponse;
 import com.aicopilot.entity.JobAnalysis;
 import com.aicopilot.entity.Resume;
@@ -55,7 +56,29 @@ public class JobAnalysisService {
         return matchResult;
     }
 
-    public List<JobAnalysis> getAnalysisHistory(Long userId) {
-        return jobAnalysisRepository.findByUserIdOrderByCreatedAtDesc(userId);
+    public List<MatchHistoryItem> getAnalysisHistory(Long userId) {
+        List<JobAnalysis> analyses = jobAnalysisRepository.findByUserIdOrderByCreatedAtDesc(userId);
+        return analyses.stream().map(a -> {
+            List<String> strengths = List.of();
+            List<String> weaknesses = List.of();
+            List<String> suggestions = List.of();
+            try {
+                MatchResponse mr = objectMapper.readValue(a.getSuggestions(), MatchResponse.class);
+                strengths = mr.getStrengths() != null ? mr.getStrengths() : List.of();
+                weaknesses = mr.getWeaknesses() != null ? mr.getWeaknesses() : List.of();
+                suggestions = mr.getSuggestions() != null ? mr.getSuggestions() : List.of();
+            } catch (Exception ignored) {}
+            return new MatchHistoryItem(
+                    a.getId(),
+                    a.getResume().getId(),
+                    a.getResume().getTitle(),
+                    a.getJobDescription(),
+                    a.getMatchScore(),
+                    strengths,
+                    weaknesses,
+                    suggestions,
+                    a.getCreatedAt()
+            );
+        }).toList();
     }
 }

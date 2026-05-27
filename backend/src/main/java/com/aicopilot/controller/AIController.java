@@ -8,6 +8,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/ai")
 @RequiredArgsConstructor
@@ -36,6 +38,12 @@ public class AIController {
                                             @RequestHeader("Authorization") String authHeader) {
         Long userId = extractUserId(authHeader);
         return ApiResponse.success(jobAnalysisService.analyzeMatch(request.getResumeId(), request.getJobDescription(), userId));
+    }
+
+    @GetMapping("/match-history")
+    public ApiResponse<List<MatchHistoryItem>> getMatchHistory(@RequestHeader("Authorization") String authHeader) {
+        Long userId = extractUserId(authHeader);
+        return ApiResponse.success(jobAnalysisService.getAnalysisHistory(userId));
     }
 
     private Long extractUserId(String authHeader) {

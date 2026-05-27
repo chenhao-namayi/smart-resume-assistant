@@ -65,7 +65,7 @@ async function loadHistory() {
 function viewReport(id) { router.push(`/interview/report?id=${id}`) }
 
 function continueInterview(row) {
-  ElMessage.info('会话恢复功能开发中')
+  router.push(`/interview?sessionId=${row.id}`)
 }
 
 async function handleDelete(row) {

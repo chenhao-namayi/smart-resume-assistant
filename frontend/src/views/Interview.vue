@@ -14,7 +14,11 @@
 
       <el-main class="chat-area" ref="chatContainer">
         <div v-if="!sessionId" class="start-area">
-          <el-card class="start-card">
+          <div v-if="restoringSession" class="restoring-hint">
+            <el-icon class="is-loading" :size="32"><Loading /></el-icon>
+            <p>正在恢复面试会话...</p>
+          </div>
+          <el-card v-else class="start-card">
             <h3>AI 模拟面试</h3>
             <p>AI 面试官将根据你的简历进行模拟面试，帮助你提升面试技巧</p>
             <el-form label-width="80px" style="margin-top: 20px;">
@@ -87,9 +91,9 @@
 import { ref, onMounted, nextTick, onBeforeUnmount } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { getResumes } from '../api/resume'
-import { startInterview, submitAnswer, endInterview } from '../api/interview'
+import { startInterview, submitAnswer, endInterview, getSessionDetail } from '../api/interview'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { ArrowLeft, Microphone } from '@element-plus/icons-vue'
+import { ArrowLeft, Microphone, Loading } from '@element-plus/icons-vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -106,6 +110,7 @@ const isComplete = ref(false)
 const chatContainer = ref(null)
 const listening = ref(false)
 const voiceSupported = ref(false)
+const restoringSession = ref(false)
 
 let recognition = null
 
@@ -254,7 +259,43 @@ function scrollDown() {
   })
 }
 
-onMounted(() => { loadResumes(); initVoice() })
+async function resumeSession(sid) {
+  restoringSession.value = true
+  loading.value = true
+  try {
+    const res = await getSessionDetail(sid)
+    const session = res.data
+    if (session.status === 'COMPLETED') {
+      router.replace(`/interview/report?id=${sid}`)
+      return
+    }
+    sessionId.value = session.id
+    selectedResumeId.value = session.resume?.id
+    position.value = session.position || ''
+    const raw = JSON.parse(session.messages || '[]')
+    messages.value = raw.map(m => ({ role: m.role, content: m.content }))
+    questionNumber.value = raw.filter(m => m.role === 'ai').length
+    await nextTick()
+    scrollDown()
+  } catch (e) {
+    ElMessage.error('无法恢复面试会话')
+    router.replace('/interview')
+  } finally {
+    restoringSession.value = false
+    loading.value = false
+  }
+}
+
+onMounted(async () => {
+  initVoice()
+  const sid = route.query.sessionId
+  if (sid) {
+    restoringSession.value = true
+    await resumeSession(sid)
+    return
+  }
+  await loadResumes()
+})
 </script>
 
 <style scoped>
@@ -267,6 +308,10 @@ onMounted(() => { loadResumes(); initVoice() })
 .header-left h3 { margin: 0; }
 .start-area {
   display: flex; justify-content: center; padding-top: 80px;
+}
+.restoring-hint {
+  display: flex; flex-direction: column; align-items: center; gap: 16px;
+  color: #909399; font-size: 15px;
 }
 .start-card { width: 480px; }
 .start-card h3 { text-align: center; margin-bottom: 8px; }
